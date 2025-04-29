@@ -1,0 +1,8 @@
+[
+  {"user_id": "u1", "event": "login", "timestamp": "2025-04-25T08:00:00Z"},
+  {"user_id": "u2", "event": "login", "timestamp": "2025-04-25T08:10:00Z"},
+  {"user_id": "u1", "event": "view_page", "timestamp": "2025-04-25T08:15:00Z"},
+  {"user_id": "u1", "event": "logout", "timestamp": "2025-04-25T08:45:00Z"},
+  {"user_id": "u2", "event": "view_page", "timestamp": "2025-04-25T08:30:00Z"},
+  {"user_id": "u2", "event": "logout", "timestamp": "2025-04-25T09:00:00Z"}
+]
