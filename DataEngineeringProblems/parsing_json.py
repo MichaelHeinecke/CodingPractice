@@ -10,7 +10,7 @@ import json
 from collections import defaultdict
 from datetime import datetime
 
-def aggregate_events(event_data: list[dict[str, str]]) -> dict[str, dict[str, int | datetime]]:
+def aggregate_events(event_data: list[dict[str, str]]) -> dict[str, dict[str, str | int]]:
     agg = defaultdict(lambda: {
         'total_activities': 0,
         'first_event': None,
@@ -30,7 +30,14 @@ def aggregate_events(event_data: list[dict[str, str]]) -> dict[str, dict[str, in
         agg_user['last_event'] = timestamp if not agg_user['last_event'] else max(timestamp, agg_user['last_event'])
         agg_user['event_types'].add(event)
 
-    return agg
+    return {
+        user: {
+            **details,
+            'first_event': details['first_event'].isoformat(),
+            'last_event': details['last_event'].isoformat()
+        }
+        for user, details in agg.items()
+    }
 
 if __name__ == '__main__':
     with open('events.json', 'r') as f:
