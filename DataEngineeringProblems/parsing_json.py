@@ -15,6 +15,7 @@ def aggregate_events(event_data: list[dict[str, str]]) -> dict[str, dict[str, in
         'total_activities': 0,
         'first_event': None,
         'last_event': None,
+        'event_types': set(),
     })
 
     for e in event_data:
@@ -27,6 +28,7 @@ def aggregate_events(event_data: list[dict[str, str]]) -> dict[str, dict[str, in
         agg_user['total_activities'] += 1
         agg_user['first_event'] = timestamp if not agg_user['first_event'] else min(timestamp, agg_user['first_event'])
         agg_user['last_event'] = timestamp if not agg_user['last_event'] else max(timestamp, agg_user['last_event'])
+        agg_user['event_types'].add(event)
 
     return agg
 
