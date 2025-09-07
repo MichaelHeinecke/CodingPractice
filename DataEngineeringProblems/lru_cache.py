@@ -3,23 +3,31 @@
 # The key value pairs are the lookup key and a
 # list node as value, storing the key, value, and
 # previous and next node in the doubly-linked list.
-from typing import Hashable, Any, Optional
+import time
+from typing import Hashable, Any
 
 
 class Node:
-    def __init__(self, key: Hashable, value: Any):
-        self.key: Hashable  = key
-        self.value: Any = value
+    def __init__(self, key: Hashable | None, value: Any):
+        self.key = key
+        self.value = value
         self.prev_node: 'Node | None' = None
         self.next_node: 'Node | None' = None
+        self.created = time.time()
 
 
 class LruCache:
-    def __init__(self, capacity: int):
+    """LRU Cache with optional time to life.
+
+    TTL defaults to 0 which means unlimited TTL.
+    """
+
+    def __init__(self, capacity: int, ttl_in_seconds=0):
         if capacity <= 0:
             raise ValueError("Capacity must be a positive integer")
         self.cache = {}
         self.capacity = capacity
+        self.ttl = ttl_in_seconds
         self.head = Node()
         self.tail = Node()
         self.head.next_node = self.tail
@@ -44,10 +52,10 @@ class LruCache:
         # If in cache, move element to front of list and return value.
         if key in self.cache:
             node = self.cache[key]
-            self._move_to_front(node)
-            return self.cache[key].value
-        else:
-            return None
+            if self.ttl == 0 or  time.time() - node.created < self.ttl:
+                self._move_to_front(node)
+                return node.value
+        return None
 
     def put(self, key, value) -> None:
         """Adds a key value pair to the LRU Cache."""
