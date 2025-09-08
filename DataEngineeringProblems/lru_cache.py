@@ -14,7 +14,7 @@ class Node:
         self.value = value
         self.prev_node: 'Node | None' = None
         self.next_node: 'Node | None' = None
-        self.created = time.time()
+        self.start_of_life = time.time()
 
 
 class LruCache:
@@ -50,14 +50,20 @@ class LruCache:
         self._add_to_front(node)
 
     def get(self, key) -> Any:
-        """Returns the value store for a key if present, else None."""
+        """Returns the value store for a key if present, else None.
+
+        If TTL is used, the method performs lazy cache eviction
+        for expired elements.
+        """
         # If in cache, move element to front of list and return value.
         with self.lock:
             if key in self.cache:
                 node = self.cache[key]
-                if self.ttl == 0 or time.time() - node.created < self.ttl:
+                if self.ttl == 0 or time.time() - node.start_of_life <= self.ttl:
                     self._move_to_front(node)
                     return node.value
+                else:
+                    del self.cache[key]
             return None
 
     def put(self, key, value) -> None:
@@ -67,6 +73,7 @@ class LruCache:
             if key in self.cache:
                 node = self.cache[key]
                 node.value = value
+                node.start_of_life = time.time()
                 self._move_to_front(node)
 
             # If not in cache, add to cache and add Node to front of list.
